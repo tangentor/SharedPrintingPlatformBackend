@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.swunlp.printer.mapper.SharefileMapper">
+
+    <resultMap id="BaseResultMap" type="org.swunlp.printer.entity.Sharefile">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="VARCHAR"/>
+            <result property="md5" column="md5" jdbcType="VARCHAR"/>
+            <result property="url" column="url" jdbcType="VARCHAR"/>
+            <result property="desc" column="desc" jdbcType="VARCHAR"/>
+            <result property="uid" column="uid" jdbcType="INTEGER"/>
+            <result property="downloadTimes" column="download_times" jdbcType="INTEGER"/>
+            <result property="printingTimes" column="printing_times" jdbcType="INTEGER"/>
+            <result property="uploadTime" column="upload_time" jdbcType="TIMESTAMP"/>
+            <result property="thumbnail" column="thumbnail" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,type,
+        md5,url,desc,
+        uid,download_times,printing_times,
+        upload_time,thumbnail
+    </sql>
+</mapper>
