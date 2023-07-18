@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.swunlp.printer.entity.PrintInfo;
-import org.swunlp.printer.result.ResponseResult;
+import org.swunlp.printer.annotation.ResponseResult;
 import org.swunlp.printer.service.PrintService;
 
 import javax.annotation.Resource;

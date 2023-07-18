@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.swunlp.printer.other.BusinessException;
-import org.swunlp.printer.result.Result;
+import org.swunlp.printer.entity.function.Result;
 
 @ControllerAdvice
 @ResponseBody

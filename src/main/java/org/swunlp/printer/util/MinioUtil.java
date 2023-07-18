@@ -107,7 +107,7 @@ public class MinioUtil {
     }
 
     public String upload(InputStream input, long fileSize,int partSize,String contentType, String fileName) {
-        String objectName = CommUtil.getNowDateLongStr("yyyy-MM/dd") + "/" + fileName;
+        String objectName = CommUtil.getNowDateLongStr("yyyy/MM/dd") + "/" + fileName;
         try {
             PutObjectArgs objectArgs = PutObjectArgs.builder().bucket(prop.getBucketName()).object(objectName)
                     .stream(input, fileSize, partSize).contentType(contentType).build();

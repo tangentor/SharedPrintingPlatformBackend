@@ -1,17 +1,20 @@
 package org.swunlp.printer.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.swunlp.printer.constants.RecordState;
 import org.swunlp.printer.entity.Record;
 import org.swunlp.printer.entity.Sharefile;
 import org.swunlp.printer.mapper.RecordMapper;
 import org.swunlp.printer.service.RecordService;
 import org.swunlp.printer.service.SharefileService;
-import org.swunlp.printer.constants.RecordState;
 
-import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
 * @author TangXi
@@ -22,8 +25,11 @@ import java.util.Date;
 public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record>
     implements RecordService{
 
-    @Resource
-    private SharefileService sharefileService;
+    private final SharefileService sharefileService;
+
+    public RecordServiceImpl(SharefileService sharefileService) {
+        this.sharefileService = sharefileService;
+    }
 
     @Override
     @Transactional
@@ -43,10 +49,26 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record>
                 } else {
                     file.setDownloadTimes(file.getDownloadTimes()+1);
                 }
+                return sharefileService.updateById(file);
             }
-            return sharefileService.updateById(file);
         }
         return false;
+    }
+
+    @Override
+    public List<Sharefile> popular() {
+        // 根据下载次数与打印次数进行加权判断（暂未使用）
+        //SELECT DISTINCT md5  FROM `t_record` ORDER BY time DESC
+        QueryWrapper<Record> wrapper = new QueryWrapper<>();
+        wrapper.select("DISTINCT md5").orderByDesc("time");
+        //直接使用记录表返回最近操作的
+        List<Record> list = list(wrapper);
+        List<Sharefile> res = list.stream().map(v -> sharefileService.detail(v.getMd5()))
+                .filter(Objects::nonNull)
+                .limit(6)
+                .collect(Collectors.toList());
+//        System.out.println(res);
+        return res;
     }
 }
 

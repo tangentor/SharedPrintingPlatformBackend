@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.swunlp.printer.result.ResponseResult;
+import org.swunlp.printer.annotation.ResponseResult;
 import org.swunlp.printer.service.PreviewService;
 
 import javax.annotation.Resource;

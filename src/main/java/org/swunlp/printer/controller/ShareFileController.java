@@ -1,34 +1,30 @@
 package org.swunlp.printer.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.web.bind.annotation.*;
-import org.swunlp.printer.entity.Record;
+import org.swunlp.printer.annotation.ResponseResult;
+import org.swunlp.printer.constants.RecordState;
 import org.swunlp.printer.entity.Sharefile;
-import org.swunlp.printer.result.ResponseResult;
 import org.swunlp.printer.service.RecordService;
 import org.swunlp.printer.service.SharefileService;
-import org.swunlp.printer.constants.RecordState;
-import org.swunlp.printer.util.RedisUtil;
 import org.swunlp.printer.util.UsernameUtil;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/shareFiles")
 @ResponseResult
 public class ShareFileController {
 
-    @Resource
-    private SharefileService sharefileService;
+    private final SharefileService sharefileService;
 
-    @Resource
-    private RecordService recordService;
+    private final RecordService recordService;
 
-    @Resource
-    private RedisUtil<Sharefile> redisUtil;
+    public ShareFileController(SharefileService sharefileService, RecordService recordService) {
+        this.sharefileService = sharefileService;
+        this.recordService = recordService;
+    }
+
 
     /**
      * 将上传的文件进行共享
@@ -59,17 +55,7 @@ public class ShareFileController {
      */
     @GetMapping("/popular")
     public List<Sharefile> popular() {
-        // 根据下载次数与打印次数进行加权判断（暂未使用）
-        //SELECT DISTINCT md5  FROM `t_record` ORDER BY time DESC
-        QueryWrapper<Record> wrapper = new QueryWrapper<>();
-        wrapper.select("DISTINCT md5").orderByDesc("time").last("limit 5");
-        //直接使用记录表返回最近操作的
-        List<Record> list = recordService.list(wrapper);
-        List<Sharefile> res = list.stream().map(v -> detail(v.getMd5()))
-                .collect(Collectors.toList());
-        System.out.println(res);
-        //TODO ddd
-        return null;
+        return recordService.popular();
     }
 
     @GetMapping("/download/{md5}")

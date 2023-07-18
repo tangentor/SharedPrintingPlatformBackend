@@ -8,6 +8,7 @@ public enum FileMimeType {
     DOCX("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
     EXCEL("xls", "application/vnd.ms-excel"),
     XLSX("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+
     TXT("txt", "text/plain"),
     JPEG("jpeg", "image/jpeg"),
     JPG("jpg", "image/jpeg"),

@@ -3,6 +3,9 @@ package org.swunlp.printer.service;
 import org.swunlp.printer.entity.Record;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.swunlp.printer.constants.RecordState;
+import org.swunlp.printer.entity.Sharefile;
+
+import java.util.List;
 
 /**
 * @author TangXi
@@ -12,4 +15,6 @@ import org.swunlp.printer.constants.RecordState;
 public interface RecordService extends IService<Record> {
 
     boolean add(String documentId, String loginUser, RecordState recordState);
+
+    List<Sharefile> popular();
 }

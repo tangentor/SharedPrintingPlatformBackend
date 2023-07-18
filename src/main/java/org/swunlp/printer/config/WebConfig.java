@@ -1,20 +1,23 @@
 package org.swunlp.printer.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.swunlp.printer.interceptor.ResponseResultInterceptor;
 import org.swunlp.printer.interceptor.UserLoginInterceptor;
-import org.swunlp.printer.util.TempPathUtil;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	@Autowired
-	private ResponseResultInterceptor responseResultInterceptor;
+	private final ResponseResultInterceptor responseResultInterceptor;
+
+	private final UserLoginInterceptor userLoginInterceptor;
+
+	public WebConfig(ResponseResultInterceptor responseResultInterceptor, UserLoginInterceptor userLoginInterceptor) {
+		this.responseResultInterceptor = responseResultInterceptor;
+		this.userLoginInterceptor = userLoginInterceptor;
+	}
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
@@ -38,17 +41,8 @@ public class WebConfig implements WebMvcConfigurer {
 		// 统一处理响应结果
 		registry.addInterceptor(responseResultInterceptor);
 
-		registry.addInterceptor(new UserLoginInterceptor())
-                .excludePathPatterns("/files/**")
-				.excludePathPatterns("/test")
+		registry.addInterceptor(userLoginInterceptor)
 				.excludePathPatterns("/device/register");
 	}
 
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		String storePath = TempPathUtil.getStorePath();
-		//将当前项目的files目录进行映射
-		registry.addResourceHandler("/files/**").addResourceLocations("file:"+storePath+"/");
-		WebMvcConfigurer.super.addResourceHandlers(registry);
-	}
 }

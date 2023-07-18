@@ -62,6 +62,21 @@ public class UploadFile implements Serializable {
      */
     private List<String> previews;
 
+    /**
+     * 上传人的用户名
+     */
+    private String uid;
+
+    /**
+     * 是否共享
+     */
+    private boolean shared;
+
+    /**
+     * 是否删除
+     */
+    private boolean deleted;
+
     public UploadFile(String filename, String originalFileUrl, String md5) {
         this.fileName = filename;
         this.originalFileUrl = originalFileUrl;

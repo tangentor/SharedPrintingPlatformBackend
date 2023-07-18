@@ -5,7 +5,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class RedisUtil <T> {
 	 * @return 时间(秒) 返回0代表为永久有效
 	 */
 	public long getExpire(String key){
-		return redisTemplate.getExpire(key,TimeUnit.SECONDS);
+		return redisTemplate.getExpire(key, TimeUnit.SECONDS);
 	}
 
 	/**
@@ -68,7 +67,7 @@ public class RedisUtil <T> {
 	 */
 	public boolean hasKey(String key){
 		try {
-			return redisTemplate.hasKey(key);
+			return Boolean.TRUE.equals(redisTemplate.hasKey(key));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

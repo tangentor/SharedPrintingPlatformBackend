@@ -1,12 +1,12 @@
 package org.swunlp.printer.util;
 
-import org.swunlp.printer.constants.FileMimeType;
+import org.swunlp.printer.pdfconversion.ConversionType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class FileMimeTypeUtil {
+public class ConversionTypeUtil {
 
     private static List<String> keys = new ArrayList<>(10);
 
@@ -14,9 +14,9 @@ public class FileMimeTypeUtil {
      * 初始化所有的类型
      */
     static {
-        FileMimeType[] types = FileMimeType.values();
-        for (FileMimeType type : types) {
-            keys.add(type.getExtension());
+        ConversionType[] types = ConversionType.values();
+        for (ConversionType type : types) {
+            keys.add(type.getFileMimeType().getExtension());
         }
     }
 

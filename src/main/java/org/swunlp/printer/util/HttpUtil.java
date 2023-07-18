@@ -1,6 +1,7 @@
 package org.swunlp.printer.util;
 
 import lombok.SneakyThrows;
+import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -18,7 +19,8 @@ public class HttpUtil {
 	}
 
 	public static InputStream getInputStreamFromURL(String urlString) throws IOException {
-		URL url = new URL(urlString);
+		String encodedUrl = UriUtils.encodePath(urlString, "UTF-8");
+		URL url = new URL(encodedUrl);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");
 		return connection.getInputStream();

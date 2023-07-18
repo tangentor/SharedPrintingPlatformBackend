@@ -2,8 +2,7 @@ package org.swunlp.printer.controller;
 
 import org.springframework.web.bind.annotation.*;
 import org.swunlp.printer.entity.PrintServiceInfo;
-import org.swunlp.printer.result.ResponseResult;
-import org.swunlp.printer.service.PrintService;
+import org.swunlp.printer.annotation.ResponseResult;
 import org.swunlp.printer.service.PrintServiceService;
 
 import javax.annotation.Resource;

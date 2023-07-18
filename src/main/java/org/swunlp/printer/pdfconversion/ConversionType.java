@@ -61,5 +61,9 @@ public enum ConversionType {
     public PDFConverter getConverter() {
         return converter;
     }
+
+    public FileMimeType getFileMimeType() {
+        return fileType;
+    }
 }
 

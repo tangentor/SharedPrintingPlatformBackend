@@ -1,4 +1,4 @@
-package org.swunlp.printer.result;
+package org.swunlp.printer.annotation;
 
 import java.lang.annotation.*;
 

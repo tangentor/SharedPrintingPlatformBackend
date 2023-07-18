@@ -1,4 +1,4 @@
-package org.swunlp.printer.result;
+package org.swunlp.printer.entity.function;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.NoArgsConstructor;
@@ -54,23 +54,23 @@ public class Result<T> {
         this.data = data;
     }
 
-    public static <T> Result instance(Integer code, String msg, T data){
-        return new Result(code,msg,data);
+    public static <T> Result<?> instance(Integer code, String msg, T data){
+        return new Result<>(code,msg,data);
     }
 
-    public static <T> Result error(String msg){
-        return new Result(500,msg,null);
+    public static <T> Result<?> error(String msg){
+        return new Result<>(500,msg,null);
     }
 
-    public static <T> Result error(int code,String msg){
-        return new Result(code,msg,null);
+    public static <T> Result<?> error(int code,String msg){
+        return new Result<>(code,msg,null);
     }
 
-    public static <T> Result success(T data){
-        return new Result(200,null,data);
+    public static <T> Result<?> success(T data){
+        return new Result<>(200,null,data);
     }
 
-    public static <T> Result adjust(T data){
+    public static <T> Result<?> adjust(T data){
         if(Objects.isNull(data)){
             return error(1001,"对象为空");
         }

@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-import org.swunlp.printer.result.ResponseResult;
-import org.swunlp.printer.result.Result;
+import org.swunlp.printer.entity.function.Result;
 import org.swunlp.printer.util.JSONUtil;
 
 @ControllerAdvice
@@ -30,8 +29,8 @@ public class ResponseResultHandler implements ResponseBodyAdvice<Object> {
 	public boolean supports(@NotNull MethodParameter returnType, @NotNull Class<? extends HttpMessageConverter<?>> converterType) {
 		ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		if (requestAttributes != null) {
-			ResponseResult attribute = (ResponseResult) requestAttributes.getRequest().getAttribute(RESPONSE_RESULT_ANN);
-			return attribute != null;
+			Object attribute = requestAttributes.getRequest().getAttribute(RESPONSE_RESULT_ANN);
+			return attribute != null && "YES!".equalsIgnoreCase(attribute.toString());
 		}
 		return false;
 	}

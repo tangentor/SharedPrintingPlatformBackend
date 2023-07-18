@@ -3,15 +3,15 @@ package org.swunlp.printer.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.swunlp.printer.cache.ShareFileCache;
+import org.swunlp.printer.cache.UploadFileCache;
 import org.swunlp.printer.entity.Sharefile;
+import org.swunlp.printer.entity.UploadFile;
 import org.swunlp.printer.mapper.SharefileMapper;
-import org.swunlp.printer.mapper.UserMapper;
-import org.swunlp.printer.other.RedisKey;
 import org.swunlp.printer.service.SharefileService;
-import org.swunlp.printer.util.RedisUtil;
+import org.swunlp.printer.service.UserService;
 import org.swunlp.printer.util.UsernameUtil;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -24,18 +24,25 @@ import java.util.List;
 public class SharefileServiceImpl extends ServiceImpl<SharefileMapper, Sharefile>
     implements SharefileService{
 
-    @Resource
-    private RedisUtil<Sharefile> redisUtil;
+    private final UploadFileCache uploadFileCache;
 
-    @Resource
-    private UserMapper userMapper;
+    private final ShareFileCache shareFileCache;
+
+    private final UserService userService;
+
+    public SharefileServiceImpl(UploadFileCache uploadFileCache, ShareFileCache shareFileCache, UserService userService) {
+        this.uploadFileCache = uploadFileCache;
+        this.shareFileCache = shareFileCache;
+        this.userService = userService;
+    }
+
 
     @Override
     public boolean newRecord(Sharefile sharefile) {
         Sharefile exist = detail(sharefile.getMd5());
         //检查是否上传过同样的文件
         if(exist != null){
-            throw new RuntimeException("该文件已被上传："+exist.getName());
+            throw new RuntimeException("该文件已被分享："+exist.getName());
         }
         // 设置上传时间
         sharefile.setUploadTime(new Date());
@@ -46,24 +53,33 @@ public class SharefileServiceImpl extends ServiceImpl<SharefileMapper, Sharefile
         sharefile.setUid(UsernameUtil.getLoginUser());
         boolean isSaved = save(sharefile);
         //更新一个文件的基本信息
-        String key = RedisKey.prefix + ":file:"+sharefile.getMd5()+":base";
-        redisUtil.set(key,sharefile);
+        UploadFile uploadFile = uploadFileCache.get(sharefile.getMd5());
+        //设置为已分享
+        uploadFile.setShared(true);
+        uploadFileCache.set( sharefile.getMd5(),uploadFile);
         return isSaved;
     }
 
     @Override
     public Sharefile detail(String md5) {
+        //查缓存
+        boolean exist = shareFileCache.exist(md5);
+        if(exist){
+            return shareFileCache.get(md5);
+        }
         LambdaQueryWrapper<Sharefile> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Sharefile::getMd5,md5);
-        return getOne(wrapper);
+        Sharefile one = getOne(wrapper);
+        shareFileCache.set(md5,one,60);
+        return one;
     }
 
     @Override
     public List<Sharefile> search(String searchKey) {
-        String key = RedisKey.prefix + ":searchKey:"+searchKey;
+        String key = "searchKey:"+searchKey;
         // 先查缓存
-        if(redisUtil.hasKey(key)){
-            return redisUtil.lGet(key,0,-1);
+        if(shareFileCache.exist(key)){
+            return shareFileCache.lGetAll(key);
         }
         // 设置上传时间
         LambdaQueryWrapper<Sharefile> wrapper = new LambdaQueryWrapper<>();
@@ -71,10 +87,15 @@ public class SharefileServiceImpl extends ServiceImpl<SharefileMapper, Sharefile
                 .or()
                 .like(Sharefile::getName, searchKey);
         List<Sharefile> list = list(wrapper);
-        //处理显示的URL
-//        list = handleURLtoReal(list);
+        //处理显示用户
+        list.forEach(
+                item->{
+                    item.setUsername(
+                            userService.detail(item.getUid()).getNickname());
+                }
+        );
         if(list.size()>0)
-            redisUtil.lSet(key,list,60);
+            shareFileCache.lSet(key,list,60);
         return list;
     }
 
@@ -83,6 +104,7 @@ public class SharefileServiceImpl extends ServiceImpl<SharefileMapper, Sharefile
     public Sharefile getByMd5(String documentId) {
         return detail(documentId);
     }
+
 }
 
 

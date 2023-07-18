@@ -70,7 +70,7 @@ public class PDFParingServiceImpl implements PDFParingService {
                 image = renderer.renderImageWithDPI(i, DEFAULT_DPI);
                 // BufferedImage srcImage = resize(image, 240, 240);//产生缩略图
                 // 产生的文件目录 文件名_preview_index
-                String uid = CommUtil.splitFilename(uploadFile.getFileName())[0] + "preview_" + i + "." + DEFAULT_FORMAT;
+                String uid = CommUtil.splitFilename(uploadFile.getFileName())[0] + "_preview_" + i + "." + DEFAULT_FORMAT;
                 //使用文件流中转一下
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 ImageIO.write(image, DEFAULT_FORMAT, byteArrayOutputStream);
@@ -93,20 +93,6 @@ public class PDFParingServiceImpl implements PDFParingService {
         }
     }
 
-    @Override
-    public Object print(PrintInfo printInfo) {
-        //查找对应的设备
-        String serviceId = printInfo.getService();
-        PrintServiceInfo info = printServiceService.findById(serviceId);
-        printInfo.setPrintServiceInfo(info);
-        //断言文件的URL不为空
-        assert printInfo.getFileUrl() != null;
-        //根据设备的IP进行对应的请求并附带打印信息
-        Object o = sendPrintDeviceByIpAndPort(info.getIp(), info.getPort(), printInfo);
-        //所在文件更新，打印记录增加
-        recordService.add(printInfo.getDocumentId(), UsernameUtil.getLoginUser(), RecordState.PRINT);
-        return o;
-    }
 
     @Override
     public String transformToPDF(UploadFile uploadFile) {
@@ -134,19 +120,4 @@ public class PDFParingServiceImpl implements PDFParingService {
         }
     }
 
-    private Object sendPrintDeviceByIpAndPort(String ip, int port, PrintInfo printInfo) {
-        HttpClient client = HttpClient.newHttpClient();
-        //新建一个POST请求包,带上token字段
-        HttpRequest request = HttpRequest.newBuilder(URI.create("http://" + ip + ":" + port + "/print"))
-                .POST(HttpRequest.BodyPublishers.ofString(JSONUtil.toJSON(printInfo)))
-                .setHeader("content-type", "application/json")
-                .setHeader("token", TokenUtil.getToken())
-                .build();
-        //给对应的设备发送数据包
-        try {
-            return client.send(request, HttpResponse.BodyHandlers.ofString()).body();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
